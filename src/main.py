@@ -1,7 +1,7 @@
 import typer
 
 
-def main(name: str, lastname: str, formal: bool = False):
+def main(name: str, lastname: str = "", formal: bool = False):
     if formal:
         typer.echo(f"Good day Ms. {name} {lastname}")
     else:
