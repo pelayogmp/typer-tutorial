@@ -10,6 +10,7 @@ def main(good: bool = True):
     
     message = message_start + ending
     typer.echo(message)
+    typer.secho(f"This is printed to stderr ...", err=True, fg=typer.colors.MAGENTA, bg=typer.colors.WHITE)
 
 if __name__ == "__main__":
     typer.run(main)
