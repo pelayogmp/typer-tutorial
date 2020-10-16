@@ -8,8 +8,6 @@ VALID_ROLES = ("HERO", "KING", "CAPTAIN", "SOLDIER", "TRAITOR")
 VERSION = "0.1.0"
 ME = "UserManager-CLI"
 
-app = typer.Typer()
-
 def get_random_role() -> str:
     return random.choice(VALID_ROLES)
 
@@ -67,7 +65,6 @@ def version_callback(value: bool):
         raise typer.Exit()
 
 # typer.Argument should be used to define argument help and other properties. 
-@app.command()
 def main(
     # the first arg to typer.Argument is the default value, if '...' then username is required
     # Note the metavar keyword to change the CLI argument name in help
@@ -104,4 +101,4 @@ def main(
     send_new_user_notification(username=username)
     
 if __name__ == "__main__":
-    app()
+    typer.run(main)
