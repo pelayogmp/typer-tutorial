@@ -66,9 +66,20 @@ def version_callback(value: bool):
         typer.echo(f"{ME} version {VERSION}")
         raise typer.Exit()
 
+
+@app.command()
+def delete(
+    username: str = typer.Argument(..., help="The required user name to delete", metavar="✨username✨"),
+):
+    """
+    (Fake) Delete the specified user name
+    """
+    check_root(username=username)
+    typer.echo(f"Deleted user {username}")
+
 # typer.Argument should be used to define argument help and other properties. 
 @app.command()
-def main(
+def create(
     # the first arg to typer.Argument is the default value, if '...' then username is required
     # Note the metavar keyword to change the CLI argument name in help
     username: str = typer.Argument(..., help="The required user name", metavar="✨username✨"),
