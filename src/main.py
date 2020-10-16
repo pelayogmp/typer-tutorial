@@ -35,23 +35,25 @@ def main(
     username: str = typer.Argument(..., help="The required user name", metavar="✨username✨"),
     # nickname is optional and defaults to None. Typehint Optional[str] is not required by typer, 
     # but may be used by editor to warn if a None is used as str
-    nickname: Optional[str] = typer.Option(None, help="The optional nickname"),
+    nickname: Optional[str] = typer.Option(None, "--alias", "--nick", "-a", help="The optional nickname"),
     # Dynamic default value will call get_random_role to obtain the default.
-    role: Optional[str] = typer.Argument(get_random_role, 
-                                        help='The role, one of ["HERO", "KING", "CAPTAIN", "SOLDIER", "TRAITOR"]', 
-                                        show_default="randomly selected"),
+    role: str = typer.Option(get_random_role, "--role", "-r",
+                             help='The role, one of ["HERO", "KING", "CAPTAIN", "SOLDIER", "TRAITOR"]', 
+                             show_default="randomly selected"),
                                     
     # Required option, note ellipsis '...', and help, typer will prompt for it if missing.
     # promp may be boolean or string
-    country: str = typer.Option(..., help="Area of operation", prompt="Enter your area of operation"),
+    # typer.Option() receives as a first function argument the default value, e.g. None, 
+    # and all the next positional values are to define the CLI option name(s).
+    country: str = typer.Option(..., "--area", "-a", help="Area of operation", prompt="Enter your area of operation"),
     # You can prompt for confimation too
     email: str = typer.Option(..., help="Your email", prompt="Enter your email", confirmation_prompt=True),
     # You can prompt and hide input too
-    password: str = typer.Option(..., help="Your password", prompt="Enter your password", confirmation_prompt=True, hide_input=True),
+    password: str = typer.Option(..., "--password", "-p", help="Your password", prompt="Enter your password", confirmation_prompt=True, hide_input=True),
     # You can hide an argument in help...
     hidden_in_help: str = typer.Argument("NotShownInHelp", hidden=True),
     # You can retrieve arguments from a list of env vars, use first found. and hide them from help
-    cfg_dir: str = typer.Option("~/.config", envvar=["USER_CFG", "GLOBAL_CFG"], show_envvar=True)
+    cfg_dir: str = typer.Option("~/.config", "--config-dir", "-c", envvar=["USER_CFG", "GLOBAL_CFG"], show_envvar=True)
 ):
     """
     (Fake) Register new user for War of Empires MMCCCIII
