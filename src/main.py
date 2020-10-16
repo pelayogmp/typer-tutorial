@@ -4,10 +4,10 @@ import random
 import typer
 
 existing_usernames = ["rick", "morty"]
-
+VALID_ROLES = ("HERO", "KING", "CAPTAIN", "SOLDIER", "TRAITOR")
 
 def get_random_role() -> str:
-    return random.choice(["HERO", "KING", "CAPTAIN", "SOLDIER", "TRAITOR"])
+    return random.choice(VALID_ROLES)
 
 def maybe_create_user(username: str, password: str, email: str, country: str, cfg_dir: str, nickname: Optional[str], role: str=get_random_role):
     if username in existing_usernames:
@@ -28,6 +28,35 @@ def check_root(username: str):
         typer.secho("The root user is reserved!", err=True, fg=typer.colors.RED)
         raise typer.Abort()
 
+def role_callback_breaks_completion(role:str):
+    # This breaks completion
+    if role.upper() in VALID_ROLES:
+        return role.upper()
+    
+    raise typer.BadParameter(f"Select one from {VALID_ROLES}")
+
+def role_callback_without_param(ctx: typer.Context, role:str):
+    if ctx.resilient_parsing:
+        # return inmediatly during completion
+        return
+    
+    if role.upper() in VALID_ROLES:
+        return role.upper()
+    
+    raise typer.BadParameter(f"Select one from {VALID_ROLES}")
+
+def role_callback(ctx: typer.Context, param: typer.CallbackParam, role:str):
+    if ctx.resilient_parsing:
+        # return inmediatly during completion
+        return
+    # Use the CallbackPaaram object properties
+    typer.echo(f"Validating parameter: {param.name}")
+    if role.upper() in VALID_ROLES:
+        return role.upper()
+    
+    raise typer.BadParameter(f"Select one from {VALID_ROLES}")
+
+
 # typer.Argument should be used to define argument help and other properties. 
 def main(
     # the first arg to typer.Argument is the default value, if '...' then username is required
@@ -38,8 +67,8 @@ def main(
     nickname: Optional[str] = typer.Option(None, "--alias", "--nick", "-a", help="The optional nickname"),
     # Dynamic default value will call get_random_role to obtain the default.
     role: str = typer.Option(get_random_role, "--role", "-r",
-                             help='The role, one of ["HERO", "KING", "CAPTAIN", "SOLDIER", "TRAITOR"]', 
-                             show_default="randomly selected"),
+                             help=f'The role, one of {VALID_ROLES}', 
+                             show_default="randomly selected", callback=role_callback),
                                     
     # Required option, note ellipsis '...', and help, typer will prompt for it if missing.
     # promp may be boolean or string
