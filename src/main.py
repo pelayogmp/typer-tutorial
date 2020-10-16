@@ -9,15 +9,15 @@ existing_usernames = ["rick", "morty"]
 def get_random_role() -> str:
     return random.choice(["HERO", "KING", "CAPTAIN", "SOLDIER", "TRAITOR"])
 
-def maybe_create_user(username: str, country: str, nickname: Optional[str], role: str=get_random_role):
+def maybe_create_user(username: str, country: str, cfg_dir: str, nickname: Optional[str], role: str=get_random_role):
     if username in existing_usernames:
         typer.echo("The user already exists")
         raise typer.Exit(code=1)
     else:
         if nickname:
-            typer.echo(f"User created: {username} with nick '{nickname}', role {role} and operates in {country}")
+            typer.echo(f"User created: {username} with nick '{nickname}', role {role}, operates in {country} with cfg dir at {cfg_dir}")
         else:
-            typer.echo(f"User created: {username} without nick, role {role} and operates in {country}")
+            typer.echo(f"User created: {username} without nick, role {role} and operates in {country} with cfg dir at {cfg_dir}")
 
 
 def send_new_user_notification(username: str):
@@ -43,13 +43,15 @@ def main(
     # argument with default value, help and default value shown. Note that show_default may be boolean or string
     country: str = typer.Argument("Entire World", help="Area of operation", show_default=True),
     # You can hide an argument in help...
-    hidden_in_help: str = typer.Argument("NotShownInHelp", hidden=True)
+    hidden_in_help: str = typer.Argument("NotShownInHelp", hidden=True),
+    # You can retrieve arguments from a list of env vars, use first found. and hide them from help
+    cfg_dir: str = typer.Argument("~/.config", envvar=["USER_CFG", "GLOBAL_CFG"], show_envvar=True)
 ):
     """
     (Fake) Register new user for War of Empires MMCCCIII
     """
     check_root(username=username)
-    maybe_create_user(username=username, nickname=nickname, role=role, country=country)
+    maybe_create_user(username=username, nickname=nickname, role=role, country=country, cfg_dir=cfg_dir)
     send_new_user_notification(username=username)
     
 if __name__ == "__main__":
