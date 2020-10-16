@@ -90,8 +90,8 @@ def main(
     hidden_in_help: str = typer.Argument("NotShownInHelp", hidden=True),
     # You can retrieve arguments from a list of env vars, use first found. and hide them from help
     cfg_dir: str = typer.Option("~/.config", "--config-dir", "-c", envvar=["USER_CFG", "GLOBAL_CFG"], show_envvar=True),
-    # Version
-    version: Optional[bool] = typer.Option(None, "--version", "-V", callback=version_callback)
+    # Version, declare "--version" to avoid automatic "--no-version", also use is_eager=True to process before any other parameter
+    version: Optional[bool] = typer.Option(None, "--version", "-V", callback=version_callback, is_eager=True)
 ):
     """
     (Fake) Register new user for War of Empires MMCCCIII
