@@ -5,6 +5,8 @@ import typer
 
 existing_usernames = ["rick", "morty"]
 VALID_ROLES = ("HERO", "KING", "CAPTAIN", "SOLDIER", "TRAITOR")
+VERSION = "0.1.0"
+ME = "UserManager-CLI"
 
 def get_random_role() -> str:
     return random.choice(VALID_ROLES)
@@ -30,6 +32,7 @@ def check_root(username: str):
 
 def role_callback_breaks_completion(role:str):
     # This breaks completion
+    typer.echo(f"Validating parameter: role")
     if role.upper() in VALID_ROLES:
         return role.upper()
     
@@ -39,7 +42,7 @@ def role_callback_without_param(ctx: typer.Context, role:str):
     if ctx.resilient_parsing:
         # return inmediatly during completion
         return
-    
+    typer.echo(f"Validating parameter: role")
     if role.upper() in VALID_ROLES:
         return role.upper()
     
@@ -56,6 +59,10 @@ def role_callback(ctx: typer.Context, param: typer.CallbackParam, role:str):
     
     raise typer.BadParameter(f"Select one from {VALID_ROLES}")
 
+def version_callback(value: bool):
+    if value:
+        typer.echo(f"{ME} version {VERSION}")
+        raise typer.Exit()
 
 # typer.Argument should be used to define argument help and other properties. 
 def main(
@@ -82,7 +89,9 @@ def main(
     # You can hide an argument in help...
     hidden_in_help: str = typer.Argument("NotShownInHelp", hidden=True),
     # You can retrieve arguments from a list of env vars, use first found. and hide them from help
-    cfg_dir: str = typer.Option("~/.config", "--config-dir", "-c", envvar=["USER_CFG", "GLOBAL_CFG"], show_envvar=True)
+    cfg_dir: str = typer.Option("~/.config", "--config-dir", "-c", envvar=["USER_CFG", "GLOBAL_CFG"], show_envvar=True),
+    # Version
+    version: Optional[bool] = typer.Option(None, "--version", "-V", callback=version_callback)
 ):
     """
     (Fake) Register new user for War of Empires MMCCCIII
